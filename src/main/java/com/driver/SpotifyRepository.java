@@ -83,12 +83,11 @@ public class SpotifyRepository {
     }
 
     public Playlist createPlaylistOnLength(String mobile, String title, int length) throws Exception {
-        User user = new User();
+        User user = null;
 
         for(User user1 : userPlaylistMap.keySet()){
             if(user1.getMobile().equals(mobile)){
-                user.setName(user1.getName());
-                user.setMobile(user1.getMobile());
+                user = user1;
                 break;
             }
         }
