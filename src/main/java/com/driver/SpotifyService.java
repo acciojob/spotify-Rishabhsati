@@ -12,18 +12,15 @@ public class SpotifyService {
     SpotifyRepository spotifyRepository = new SpotifyRepository();
 
     public User createUser(String name, String mobile){
-        User user = spotifyRepository.createUser(name,mobile);
-        return user;
+        return spotifyRepository.createUser(name,mobile);
     }
 
     public Artist createArtist(String name) {
-        Artist artist = spotifyRepository.createArtist(name);
-        return artist;
+        return spotifyRepository.createArtist(name);
     }
 
     public Album createAlbum(String title, String artistName) {
-        Album album = spotifyRepository.createAlbum(title, artistName);
-        return album;
+        return spotifyRepository.createAlbum(title,artistName);
     }
 
     public Song createSong(String title, String albumName, int length) throws Exception {
@@ -43,16 +40,14 @@ public class SpotifyService {
     }
 
     public Song likeSong(String mobile, String songTitle) throws Exception {
-        return spotifyRepository.likeSong(mobile,songTitle);
+        return spotifyRepository.likeSong(mobile, songTitle);
     }
 
     public String mostPopularArtist() {
-        String res = spotifyRepository.mostPopularArtist();
-        return res;
+        return spotifyRepository.mostPopularArtist();
     }
 
     public String mostPopularSong() {
-        String res = spotifyRepository.mostPopularSong();
-        return res;
+        return spotifyRepository.mostPopularSong();
     }
 }

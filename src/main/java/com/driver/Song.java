@@ -11,7 +11,7 @@ public class Song {
 
     public Song(String title, int length){
         this.title = title;
-        this.length = length;
+        this.length = length;//length
     }
 
     public String getTitle() {
