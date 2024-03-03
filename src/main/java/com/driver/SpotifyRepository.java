@@ -92,7 +92,7 @@ public class SpotifyRepository {
             }
         }
 
-        if(!user.getMobile().equals(mobile)) throw new Exception("User does not exist");
+        if(user==null) throw new Exception("User does not exist");
         Playlist playlist = new Playlist(title);
         playlists.add(playlist);
 
@@ -111,17 +111,16 @@ public class SpotifyRepository {
     }
 
     public Playlist createPlaylistOnName(String mobile, String title, List<String> songTitles) throws Exception {
-        User user = new User();
+        User user = null;
 
         for(User user1 : userPlaylistMap.keySet()){  //  finding the user in the user playlist hashmap
             if(user1.getMobile().equals(mobile)){
-                user.setName(user1.getName());
-                user.setMobile(user1.getMobile());
+                user = user1;
                 break;
             }
         }
 
-        if(!user.getMobile().equals(mobile)) throw new Exception("User does not exist"); // throw error if user not exist
+        if(user != null) throw new Exception("User does not exist"); // throw error if user not exist
         Playlist playlist = new Playlist(title); // create playlist
         playlists.add(playlist); //add playlist
 
