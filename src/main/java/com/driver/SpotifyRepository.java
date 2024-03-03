@@ -52,31 +52,35 @@ public class SpotifyRepository {
     }
 
     public Album createAlbum(String title, String artistName) {
-        Artist artist =null;
-        for(Artist artist1 : artists){
-            if(artist1.getName().equals(artistName)){ // check for does artist exist or not
-                artist.setName(artist1.getName());
+        Artist artist=null;
+        for(Artist artist1:artists){
+            if(artist1.getName().equals(artistName)){// check for does artist exist or not
+                artist=artist1;
                 break;
             }
         }
-        if(artist==null) artist = createArtist(artistName); // if artist is not existing then throw the exception
-        Album album = new Album(title);
+        if(artist==null) artist = createArtist(artistName); // if artist is not existing then create new artist
+
+        Album album=new Album(title);
         albums.add(album);
         artistAlbumMap.get(artist).add(album); // adding the artist and the artist album in the artistalbum hashmap
+        albumSongMap.put(album,new ArrayList<>());
         return album;
+
     }
 
     public Song createSong(String title, String albumName, int length) throws Exception{
         Album album=null;
         for(Album album1:albums){
-            if(album1.getTitle().equals(albumName)){ // checking does album exist or not
-                album.setTitle(album1.getTitle());
+            if(album1.getTitle().equals(albumName)){// checking does album exist or not
+                album=album1;
+                break;
             }
         }
         if(album==null) throw new Exception("album does not exist "); // throw exception if album does not exist
         Song song = new Song(title,length); //creating song
         song.setLikes(0); // set song likes 0
-        albums.add(album); // added album in the arraylist
+        songs.add(song);
         songLikeMap.put(song,new ArrayList<>()); // creating song like map and add the song in the hashmap
         albumSongMap.get(album).add(song); // added album to the album song map
         return song;
@@ -121,11 +125,15 @@ public class SpotifyRepository {
         }
 
         if(user != null) throw new Exception("User does not exist"); // throw error if user not exist
+
         Playlist playlist = new Playlist(title); // create playlist
         playlists.add(playlist); //add playlist
 
+        playlistSongMap.put(playlist,new ArrayList<>());
+        playlistListenerMap.put(playlist,new ArrayList<>());
+
         for(Song song : songs){ //finding song
-            if(song.getTitle().equals(title)) playlistSongMap.get(playlist).add(song);
+            if(songTitles.contains(song.getTitle())) playlistSongMap.get(playlist).add(song);
         }
 
         playlistListenerMap.get(playlist).add(user); // add playlist and user in the listner hashmap
@@ -147,16 +155,23 @@ public class SpotifyRepository {
 
         Playlist playlist = null;
         for(Playlist playlist1 : playlists){ // finding does playlist exist
-            if(playlist1.equals(playlistTitle)){
+            if(playlist1.getTitle().equals(playlistTitle)){
                 playlist = playlist1;
                 break;
             }
         }
         if(playlist == null) throw new Exception("Playlist does not exist");
 
-        playlistListenerMap.get(playlist).add(user); // add playlist to the listners hashmap
-        if(!userPlaylistMap.get(user).contains(playlist)) userPlaylistMap.get(user).add(playlist); // add playlist to the playlist hashmap
+        if(creatorPlaylistMap.containsKey(user) && creatorPlaylistMap.get(user) == playlist ||
+                playlistListenerMap.get(playlist).contains(user)){
+            return playlist;
+        }
 
+        playlistListenerMap.get(playlist).add(user);
+
+        if(!userPlaylistMap.get(user).contains(playlist)){
+            userPlaylistMap.get(user).add(playlist);
+        }
         return playlist;
     }
 
@@ -178,6 +193,10 @@ public class SpotifyRepository {
             }
         }
         if(song == null) throw new Exception("Song does not exist");
+
+        if(songLikeMap.get(song).contains(user)){
+            return song;
+        }
 
         song.setLikes(song.getLikes()+1); // increasing the song like
         songLikeMap.get(song).add(user); // creating a like hashmap for the song and user
@@ -209,9 +228,9 @@ public class SpotifyRepository {
     }
 
     public String mostPopularSong() {
-        int countLikes=0;
+        int countLikes=Integer.MIN_VALUE;
         String popularSong="";
-        for(Song song:songs){ // finding most popular song in the songs table
+        for(Song song:songs){
             if(song.getLikes() > countLikes){
                 popularSong=song.getTitle();
                 countLikes=song.getLikes();
